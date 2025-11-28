@@ -15,6 +15,18 @@ if not os.path.exists('data/daily_log.csv'):
 # Navigation
 page = st.sidebar.radio("Navigate to:", ["🏠 Home", "📊 Daily Input", "🔍 Insights", "📈 Summary"])
 
+# 👇 ADD THIS NEW FEEDBACK SECTION 👇
+st.sidebar.markdown("---")
+with st.sidebar.expander("💬 Give Feedback"):
+    st.write("Found a bug? Have suggestions?")
+    feedback = st.text_area("Your feedback:")
+    if st.button("Submit Feedback"):
+        st.success("Thank you! Your feedback helps improve the app.")
+        # Simple file logging
+        with open("user_feedback.txt", "a") as f:
+            f.write(f"{datetime.now().isoformat()}: {feedback}\n")
+
+# 👇 MAKE SURE this line is properly aligned with the navigation code
 if page == "🏠 Home":
     st.title("🏥 Health Intelligence System")
     st.write("Track your health patterns and discover insights.")
