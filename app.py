@@ -149,7 +149,9 @@ elif page == "🔍 Insights":
         foods_lower = str(foods).lower()
         
         is_heavy_food = any(indicator in foods_lower for indicator in heavy_food_indicators)
-        is_low_energy = 'low' in energy.lower() or 'very low' in energy.lower()
+        is_low_energy = False
+        if energy and isinstance(energy, str):
+            is_low_energy = 'low' in energy.lower() or 'very low' in energy.lower()
         
         if is_heavy_food and is_low_energy:
             insights.append({
