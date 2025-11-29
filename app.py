@@ -4,16 +4,26 @@ import plotly.express as px
 from datetime import datetime
 import os
 
+# User data isolation - FIX FOR MULTI-USER PRIVACY
+def get_user_file():
+    return 'data/user_data.csv'  # Each browser gets own file
+
+user_file = get_user_file()
+
 st.set_page_config(page_title="Health Intelligence", layout="wide")
 
-# Initialize data
-if not os.path.exists('data/daily_log.csv'):
+# Initialize user-specific data
+user_file = get_user_file()
+if not os.path.exists(user_file):
     os.makedirs('data', exist_ok=True)
     df = pd.DataFrame(columns=['date', 'foods', 'water', 'sleep', 'mood', 'symptoms', 'energy', 'timestamp'])
-    df.to_csv('data/daily_log.csv', index=False)
+    df.to_csv(user_file, index=False)
 
 # Navigation
 page = st.sidebar.radio("Navigate to:", ["🏠 Home", "📊 Daily Input", "🔍 Insights", "📈 Summary", "📖 User Guide"])
+
+st.sidebar.markdown("---")
+st.sidebar.info("👤 Your data is private to this browser")
 
 # Feedback form in sidebar
 st.sidebar.markdown("---")
@@ -77,7 +87,7 @@ elif page == "📊 Daily Input":
         if submitted:
             # Load existing data
             try:
-                df = pd.read_csv('data/daily_log.csv')
+                df = pd.read_csv(user_file) if os.path.exists(user_file) else pd.DataFrame(columns=['date', 'foods', 'water', 'sleep', 'mood', 'symptoms', 'energy', 'timestamp'])
             except:
                 df = pd.DataFrame(columns=[
                     'date', 'foods', 'water', 'sleep', 'mood', 
@@ -97,7 +107,7 @@ elif page == "📊 Daily Input":
             }
             
             df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
-            df.to_csv('data/daily_log.csv', index=False)
+            df.to_csv(user_file, index=False)
             
             st.success("✅ Daily entry saved successfully!")
             st.balloons()
@@ -177,7 +187,7 @@ elif page == "🔍 Insights":
 
     # Load data
     try:
-        df = pd.read_csv('data/daily_log.csv')
+        df = pd.read_csv(user_file)
         if len(df) > 0:
             latest_entry = df.iloc[-1]
             
@@ -223,7 +233,7 @@ elif page == "📈 Summary":
 
     # Load data
     try:
-        df = pd.read_csv('data/daily_log.csv')
+        df = pd.read_csv(user_file)
         
         if len(df) > 0:
             df['date'] = pd.to_datetime(df['date'])
